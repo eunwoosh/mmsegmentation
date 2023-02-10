@@ -8,9 +8,15 @@ from .self_attention_block import SelfAttentionBlock
 from .shape_convert import (nchw2nlc2nchw, nchw_to_nlc, nlc2nchw2nlc,
                             nlc_to_nchw)
 from .up_conv_block import UpConvBlock
+from .asymmetric_position_attention import AsymmetricPositionAttentionModule
+from .aggregator import IterativeAggregator
+from .local_attention import LocalAttentionModule
+from .channel_shuffle import channel_shuffle
 
 __all__ = [
     'ResLayer', 'SelfAttentionBlock', 'make_divisible', 'InvertedResidual',
     'UpConvBlock', 'InvertedResidualV3', 'SELayer', 'PatchEmbed',
-    'nchw_to_nlc', 'nlc_to_nchw', 'nchw2nlc2nchw', 'nlc2nchw2nlc'
+    'nchw_to_nlc', 'nlc_to_nchw', 'nchw2nlc2nchw', 'nlc2nchw2nlc',
+    'AsymmetricPositionAttentionModule', 'IterativeAggregator',
+    'LocalAttentionModule', 'channel_shuffle'
 ]
