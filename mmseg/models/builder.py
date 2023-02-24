@@ -13,6 +13,7 @@ NECKS = MODELS
 HEADS = MODELS
 LOSSES = MODELS
 SEGMENTORS = MODELS
+SCALAR_SCHEDULERS = MODELS
 
 
 def build_backbone(cfg):
@@ -47,3 +48,16 @@ def build_segmentor(cfg, train_cfg=None, test_cfg=None):
         'test_cfg specified in both outer field and model field '
     return SEGMENTORS.build(
         cfg, default_args=dict(train_cfg=train_cfg, test_cfg=test_cfg))
+
+
+def build_scalar_scheduler(cfg, default_value=None):
+    if cfg is None:
+        if default_value is not None:
+            assert isinstance(default_value, (int, float))
+            cfg = dict(type="ConstantScalarScheduler", scale=float(default_value))
+        else:
+            return None
+    elif isinstance(cfg, (int, float)):
+        cfg = dict(type="ConstantScalarScheduler", scale=float(cfg))
+
+    return SCALAR_SCHEDULERS.build(cfg)

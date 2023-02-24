@@ -9,7 +9,7 @@ from .dnl_head import DNLHead
 from .dpt_head import DPTHead
 from .ema_head import EMAHead
 from .enc_head import EncHead
-from .fcn_head import FCNHead
+from .fcn_head import FCNHead, CustomFCNHead
 from .fpn_head import FPNHead
 from .gc_head import GCHead
 from .isa_head import ISAHead
@@ -36,5 +36,5 @@ __all__ = [
     'PointHead', 'APCHead', 'DMHead', 'LRASPPHead', 'SETRUPHead',
     'SETRMLAHead', 'DPTHead', 'SETRMLAHead', 'SegmenterMaskTransformerHead',
     'SegformerHead', 'ISAHead', 'STDCHead', 'IterativeDecodeHead',
-    'KernelUpdateHead', 'KernelUpdator'
+    'KernelUpdateHead', 'KernelUpdator', 'CustomFCNHead'
 ]

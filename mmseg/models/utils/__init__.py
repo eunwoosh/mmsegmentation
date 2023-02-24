@@ -12,11 +12,12 @@ from .asymmetric_position_attention import AsymmetricPositionAttentionModule
 from .aggregator import IterativeAggregator
 from .local_attention import LocalAttentionModule
 from .channel_shuffle import channel_shuffle
+from .angular_pw_conv import AngularPWConv
 
 __all__ = [
     'ResLayer', 'SelfAttentionBlock', 'make_divisible', 'InvertedResidual',
     'UpConvBlock', 'InvertedResidualV3', 'SELayer', 'PatchEmbed',
     'nchw_to_nlc', 'nlc_to_nchw', 'nchw2nlc2nchw', 'nlc2nchw2nlc',
     'AsymmetricPositionAttentionModule', 'IterativeAggregator',
-    'LocalAttentionModule', 'channel_shuffle'
+    'LocalAttentionModule', 'channel_shuffle', 'AngularPWConv'
 ]

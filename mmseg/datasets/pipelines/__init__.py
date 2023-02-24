@@ -1,5 +1,5 @@
 # Copyright (c) OpenMMLab. All rights reserved.
-from .compose import Compose
+from .compose import Compose, MaskCompose
 from .formatting import (Collect, ImageToTensor, ToDataContainer, ToTensor,
                          Transpose, to_tensor)
 from .loading import LoadAnnotations, LoadImageFromFile
@@ -15,5 +15,5 @@ __all__ = [
     'MultiScaleFlipAug', 'Resize', 'RandomFlip', 'Pad', 'RandomCrop',
     'Normalize', 'SegRescale', 'PhotoMetricDistortion', 'RandomRotate',
     'AdjustGamma', 'CLAHE', 'Rerange', 'RGB2Gray', 'RandomCutOut',
-    'RandomMosaic'
+    'RandomMosaic', 'MaskCompose'
 ]
