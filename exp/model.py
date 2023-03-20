@@ -1,3 +1,4 @@
+num_classes = 20
 # model.py
 model = dict(
     backbone=dict(
@@ -43,7 +44,7 @@ model = dict(
         num_convs=1,
         concat_input=False,
         dropout_ratio=-1,
-        num_classes=2,
+        num_classes=num_classes,
         norm_cfg=dict(type='BN', requires_grad=True),
         align_corners=False,
         enable_aggregator=True,
@@ -65,7 +66,7 @@ model = dict(
         output_scale=3.0,
     ))
 load_from = 'https://storage.openvinotoolkit.org/repositories/openvino_training_extensions/models/custom_semantic_segmentation/litehrnet18_imagenet1k_rsc.pth'
-fp16 = dict(loss_scale=512.0)
+# fp16 = dict(loss_scale=512.0)
 
 
 # added
@@ -80,26 +81,29 @@ optimizer = dict(  # Config used to build optimizer, support all the optimizers 
     lr=0.001,
     eps=1e-8,
     weight_decay=0.0)
-optimizer_config = dict(
-    type="Fp16OptimizerHook", grad_clip=dict(max_norm=40, norm_type=2),
-    distributed=False, loss_scale=512.0)  # Config used to build the optimizer hook, refer to 
+# optimizer_config = dict(
+#     type="Fp16OptimizerHook", grad_clip=dict(max_norm=40, norm_type=2),
+#     distributed=False, loss_scale=512.0)  # Config used to build the optimizer hook, refer to 
+optimizer_config = dict()
 runner = dict(
     type='EpochBasedRunner', # Type of runner to use (i.e. IterBasedRunner or EpochBasedRunner)
-    max_epochs=3
+    max_epochs=25
 ) # Total number of iterations. For EpochBasedRunner use `max_epochs`
 
+# lr_config = dict(
+#   policy='ReduceLROnPlateau', metric='mDice', patience=5, iteration_patience=0, interval=1, min_lr=1e-06,
+#   warmup='linear', warmup_iters=100, warmup_ratio=0.3333333333333333
+# )
+# lr_config = dict(policy='CosineAnnealing', min_lr=1e-06, by_epoch=True, warmup='linear', warmup_iters=100, warmup_ratio=0.333333)
 lr_config = dict(
-  policy='ReduceLROnPlateau', metric='mDice', patience=5, iteration_patience=0, interval=1, min_lr=1e-06,
-  warmup='linear', warmup_iters=100, warmup_ratio=0.3333333333333333
-)
+    policy='poly',  # The policy of scheduler, also support Step, CosineAnnealing, Cyclic, etc. Refer to details of supported LrUpdater from https://github.com/open-mmlab/mmcv/blob/master/mmcv/runner/hooks/lr_updater.py#L9.
+    power=0.9,  # The power of polynomial decay.
+    min_lr=0.0001,  # The minimum learning rate to stable the training.
+    by_epoch=False)  # Whether count by epoch or not.
 
 log_config = dict(  # config to register logger hook
     interval=10,  # Interval to print the log
-    hooks=[
-        dict(type='TextLoggerHook', by_epoch=True),
-        # dict(type='TensorboardLoggerHook', by_epoch=False),
-        # MMSegWandbHook is mmseg implementation of WandbLoggerHook. ClearMLLoggerHook, DvcliveLoggerHook, MlflowLoggerHook, NeptuneLoggerHook, PaviLoggerHook, SegmindLoggerHook are also supported based on MMCV implementation.
-    ])
+    hooks=[dict(type='TextLoggerHook', by_epoch=True),])
 evaluation=dict(interval=1, metric='mDice', show_log=True, save_best='mDice', rule='greater')
 
 resume_from = None  # Resume checkpoints from a given path, the training will be resumed from the iteration when the checkpoint's is saved.
@@ -115,12 +119,12 @@ train_pipeline = [
         keep_ratio=False),
     dict(type='RandomCrop', crop_size=(512, 512), cat_max_ratio=0.75),
     dict(type='RandomFlip', prob=0.5, direction='horizontal'),
-    dict(
-        type='MaskCompose',
-        prob=0.5,
-        lambda_limits=(4, 16),
-        keep_original=False,
-        transforms=[dict(type='PhotoMetricDistortion')]),
+    # dict(
+    #     type='MaskCompose',
+    #     prob=0.5,
+    #     lambda_limits=(4, 16),
+    #     keep_original=False,
+    #     transforms=[dict(type='PhotoMetricDistortion')]),
     dict(
         type='Normalize',
         mean=[123.675, 116.28, 103.53],
@@ -150,28 +154,39 @@ test_pipeline = [
         ])
 ]
 
-dataset = "kvasir_seg"
-dataset_size = "full"
-
+# dataset="kvasir_seg"
+# dataset_size="full"
 data = dict(
     samples_per_gpu=8,  # Batch size of a single GPU
     workers_per_gpu=0,  # Worker to pre-fetch data for each single GPU
     persistent_workers=False,
     train=dict(
-        type="KvasirSegDataset",
-        img_dir=f"/home/eunwoo/work/gpu_util_comp/data/{dataset}/{dataset_size}/img_dir/train",
-        ann_dir=f"/home/eunwoo/work/gpu_util_comp/data/{dataset}/{dataset_size}/ann_dir/train",
+        # type="KvasirSegDataset",
+        # img_dir=f"/home/eunwoo/work/gpu_util_comp/data/{dataset}/{dataset_size}/img_dir/train",
+        # ann_dir=f"/home/eunwoo/work/gpu_util_comp/data/{dataset}/{dataset_size}/ann_dir/train",
+        type="PascalVOCDataset",
+        img_dir=f"/home/eunwoo/work/data/voc/voc1.0/JPEGImages",
+        split=f"/home/eunwoo/work/data/voc/voc1.0/ImageSets/Segmentation/train.txt",
+        ann_dir=f"/home/eunwoo/work/data/voc/voc1.0/SegmentationClass",
         pipeline=train_pipeline,
     ),
     val=dict(
-        type="KvasirSegDataset",
-        img_dir=f"/home/eunwoo/work/gpu_util_comp/data/{dataset}/{dataset_size}/img_dir/val",
-        ann_dir=f"/home/eunwoo/work/gpu_util_comp/data/{dataset}/{dataset_size}/ann_dir/val",
+        # type="KvasirSegDataset",
+        # img_dir=f"/home/eunwoo/work/gpu_util_comp/data/{dataset}/{dataset_size}/img_dir/val",
+        # ann_dir=f"/home/eunwoo/work/gpu_util_comp/data/{dataset}/{dataset_size}/ann_dir/val",
+        type="PascalVOCDataset",
+        img_dir=f"/home/eunwoo/work/data/voc/voc1.0/JPEGImages",
+        split=f"/home/eunwoo/work/data/voc/voc1.0/ImageSets/Segmentation/val.txt",
+        ann_dir=f"/home/eunwoo/work/data/voc/voc1.0/SegmentationClass",
         pipeline=test_pipeline,
     ),
     test=dict(
-        type="KvasirSegDataset",
-        img_dir=f"/home/eunwoo/work/gpu_util_comp/data/{dataset}/{dataset_size}/img_dir/val",
-        ann_dir=f"/home/eunwoo/work/gpu_util_comp/data/{dataset}/{dataset_size}/ann_dir/val",
+        # type="KvasirSegDataset",
+        # img_dir=f"/home/eunwoo/work/gpu_util_comp/data/{dataset}/{dataset_size}/img_dir/val",
+        # ann_dir=f"/home/eunwoo/work/gpu_util_comp/data/{dataset}/{dataset_size}/ann_dir/val",
+        type="PascalVOCDataset",
+        img_dir=f"/home/eunwoo/work/data/voc/voc1.0/JPEGImages",
+        split=f"/home/eunwoo/work/data/voc/voc1.0/ImageSets/Segmentation/val.txt",
+        ann_dir=f"/home/eunwoo/work/data/voc/voc1.0/SegmentationClass",
         pipeline=test_pipeline,
     ))
