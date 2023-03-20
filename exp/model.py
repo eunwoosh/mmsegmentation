@@ -1,4 +1,4 @@
-num_classes = 20
+num_classes = 21  # TODO num class + 1(background)
 # model.py
 model = dict(
     backbone=dict(
@@ -54,11 +54,9 @@ model = dict(
         ]),
     # modified during runtime
     train_cfg = dict(
-        max_loss=dict(
-            mix_loss=dict(
-                enable=False,
-                weight=0.1
-            )
+        mix_loss=dict(
+            enable=False,
+            weight=0.1
         )
     ),
     test_cfg=dict(
@@ -66,7 +64,6 @@ model = dict(
         output_scale=3.0,
     ))
 load_from = 'https://storage.openvinotoolkit.org/repositories/openvino_training_extensions/models/custom_semantic_segmentation/litehrnet18_imagenet1k_rsc.pth'
-# fp16 = dict(loss_scale=512.0)
 
 
 # added
@@ -81,10 +78,7 @@ optimizer = dict(  # Config used to build optimizer, support all the optimizers 
     lr=0.001,
     eps=1e-8,
     weight_decay=0.0)
-# optimizer_config = dict(
-#     type="Fp16OptimizerHook", grad_clip=dict(max_norm=40, norm_type=2),
-#     distributed=False, loss_scale=512.0)  # Config used to build the optimizer hook, refer to 
-optimizer_config = dict()
+optimizer_config = dict(grad_clip=dict(max_norm=40, norm_type=2))
 runner = dict(
     type='EpochBasedRunner', # Type of runner to use (i.e. IterBasedRunner or EpochBasedRunner)
     max_epochs=25
@@ -165,9 +159,9 @@ data = dict(
         # img_dir=f"/home/eunwoo/work/gpu_util_comp/data/{dataset}/{dataset_size}/img_dir/train",
         # ann_dir=f"/home/eunwoo/work/gpu_util_comp/data/{dataset}/{dataset_size}/ann_dir/train",
         type="PascalVOCDataset",
-        img_dir=f"/home/eunwoo/work/data/voc/voc1.0/JPEGImages",
-        split=f"/home/eunwoo/work/data/voc/voc1.0/ImageSets/Segmentation/train.txt",
-        ann_dir=f"/home/eunwoo/work/data/voc/voc1.0/SegmentationClass",
+        img_dir=f"/home/eunwoosh/data/voc1.0/JPEGImages",
+        split=f"/home/eunwoosh/data/voc1.0/ImageSets/Segmentation/train.txt",
+        ann_dir=f"/home/eunwoosh/data/voc1.0/SegmentationClass",
         pipeline=train_pipeline,
     ),
     val=dict(
@@ -175,9 +169,9 @@ data = dict(
         # img_dir=f"/home/eunwoo/work/gpu_util_comp/data/{dataset}/{dataset_size}/img_dir/val",
         # ann_dir=f"/home/eunwoo/work/gpu_util_comp/data/{dataset}/{dataset_size}/ann_dir/val",
         type="PascalVOCDataset",
-        img_dir=f"/home/eunwoo/work/data/voc/voc1.0/JPEGImages",
-        split=f"/home/eunwoo/work/data/voc/voc1.0/ImageSets/Segmentation/val.txt",
-        ann_dir=f"/home/eunwoo/work/data/voc/voc1.0/SegmentationClass",
+        img_dir=f"/home/eunwoosh/data/voc1.0/JPEGImages",
+        split=f"/home/eunwoosh/data/voc1.0/ImageSets/Segmentation/val.txt",
+        ann_dir=f"/home/eunwoosh/data/voc1.0/SegmentationClass",
         pipeline=test_pipeline,
     ),
     test=dict(
@@ -185,8 +179,8 @@ data = dict(
         # img_dir=f"/home/eunwoo/work/gpu_util_comp/data/{dataset}/{dataset_size}/img_dir/val",
         # ann_dir=f"/home/eunwoo/work/gpu_util_comp/data/{dataset}/{dataset_size}/ann_dir/val",
         type="PascalVOCDataset",
-        img_dir=f"/home/eunwoo/work/data/voc/voc1.0/JPEGImages",
-        split=f"/home/eunwoo/work/data/voc/voc1.0/ImageSets/Segmentation/val.txt",
-        ann_dir=f"/home/eunwoo/work/data/voc/voc1.0/SegmentationClass",
+        img_dir=f"/home/eunwoosh/data/voc1.0/JPEGImages",
+        split=f"/home/eunwoosh/data/voc1.0/ImageSets/Segmentation/val.txt",
+        ann_dir=f"/home/eunwoosh/data/voc1.0/SegmentationClass",
         pipeline=test_pipeline,
     ))
