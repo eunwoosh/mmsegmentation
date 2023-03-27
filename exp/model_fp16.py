@@ -52,9 +52,11 @@ model = dict(
         ]),
     # modified during runtime
     train_cfg = dict(
-        mix_loss=dict(
-            enable=False,
-            weight=0.1
+        max_loss=dict(
+            mix_loss=dict(
+                enable=False,
+                weight=0.1
+            )
         )
     ),
     test_cfg=dict(
@@ -76,7 +78,10 @@ optimizer = dict(  # Config used to build optimizer, support all the optimizers 
     lr=0.001,
     eps=1e-8,
     weight_decay=0.0)
-optimizer_config = dict(grad_clip=dict(max_norm=40, norm_type=2))
+fp16 = dict(loss_scale=512.0)
+optimizer_config = dict(
+    type="Fp16OptimizerHook", grad_clip=dict(max_norm=40, norm_type=2),
+    distributed=False, loss_scale=512.0)  # Config used to build the optimizer hook, refer to 
 runner = dict(
     type='EpochBasedRunner', # Type of runner to use (i.e. IterBasedRunner or EpochBasedRunner)
     max_epochs=20
